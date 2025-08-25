@@ -8,33 +8,40 @@ export const useAuthContext = () => useContext(AuthContext);
 
 const AuthProvider = ({ children }) => {
     const [accessToken, setAccessTokenState] = useState(getAccessToken());
-    const [user, setUser] = useState(null); // can be fetched from /me or decoded from token
+    const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")) || null);
     const { fetchData } = useFetch();
     const isAuthenticated = !!accessToken;
 
     const login = (userData = null) => {
-        if (userData) setUser(userData);
+        if (userData) {
+            setUser(userData);
+            localStorage.setItem("user", JSON.stringify(userData));
+        } else if (accessToken && !user) {
+            fetchProfile();
+        }
     };
 
     const logout = () => {
         clearAccessToken();
         setAccessTokenState(null);
+        localStorage.removeItem("user");
         setUser(null);
     };
 
     useEffect(() => {
-        const token = getAccessToken();
-        if (token) {
-            setAccessTokenState(token);
-            // Fetch User profile from API or decode token to get user info
-            (async () => {
-                const userData = await fetchData("fetchProfile");
-                if (userData) {
-                    setUser(userData);
-                }
-            })();
+        const shouldFetch = accessToken && !user;
+        if (shouldFetch) {
+            fetchProfile()
         }
-    }, []);
+    }, [accessToken, user]);
+
+    const fetchProfile = async () => {
+        const userData = await fetchData("fetchProfile");
+        if (userData) {
+            setUser(userData);
+            localStorage.setItem("user", JSON.stringify(userData));
+        }
+    };
 
     const value = {
         accessToken,

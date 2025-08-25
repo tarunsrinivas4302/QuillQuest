@@ -20,6 +20,7 @@ export const consumeFromQueue = async (queueName, callback) => {
     const { channel } = await rbmqClient();
     await channel.assertQueue(queueName, { durable: false });
     channel.consume(queueName, (msg) => {
+        console.log({msg})
         callback(JSON.parse(msg.content.toString()));
         channel.ack(msg);
     }, { noAck: false });

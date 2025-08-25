@@ -1,13 +1,14 @@
 import { transporter } from "../config/smtp.js";
-import { getEmailTemplate } from "../templates/email.template.js";
+import { getEmailTemplate } from "../utils/email.template.js";
 
 export const sendEmail = async ({ to, subject, template, payload }) => {
-  const html = await getEmailTemplate(template, payload);
+  console.log(template , payload)
+  const { subject: emailSubject, html } = await getEmailTemplate(template, payload);
 
   const info = await transporter.sendMail({
     from: '"Blog App" <no-reply@blog.com>',
     to,
-    subject,
+    subject : subject || emailSubject,
     html,
   });
 

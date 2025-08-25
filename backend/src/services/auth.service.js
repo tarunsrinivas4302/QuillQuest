@@ -6,6 +6,8 @@ import {
 } from "../utils/generateTokens.js";
 import crypto from "crypto";
 import { sendEmailToQueue } from "../queues/email.publisher.js";
+import { publishToQueue } from "../config/rbmqClient.js";
+import { MAIL_MESSAGES } from "../config/mail-messages.js";
 
 export const registerUser = async ({
     username,
@@ -23,6 +25,8 @@ export const registerUser = async ({
         password: hashedPassword,
         profileImage,
     });
+    const message = MAIL_MESSAGES.register(user);
+    await publishToQueue("emailQueue",message)
     await user.save();
     return user;
 };
@@ -56,6 +60,13 @@ export const forgotPassword = async (req, res) => {
     const { email } = req.body;
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: "No user found." });
+
+    // * Set a cooldown between reset emails -e.g : allow one email in every 15 minutes 
+    if (user  && user?.resetPasswordExpires > Date.now()) {
+        return res.status(429).json({
+            message: "Reset email already sent. Please try again later.",
+        });
+    }
 
     const token = crypto.randomBytes(32).toString("hex");
     user.resetPasswordToken = crypto

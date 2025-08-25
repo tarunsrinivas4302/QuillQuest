@@ -3,6 +3,7 @@ import { sendEmail } from "../services/mailer.service.js";
 
 export const startEmailWorker = async () => {
   await consumeFromQueue("emailQueue", async (data) => {
+    console.log(data)
     try {
       await sendEmail(data);
     } catch (err) {
@@ -10,3 +11,6 @@ export const startEmailWorker = async () => {
     }
   });
 };
+
+
+startEmailWorker();

@@ -2,16 +2,14 @@ import React, { lazy, Suspense } from 'react'
 import { createBrowserRouter } from 'react-router-dom'
 import Loader from "@/components/common/Loader";
 import RequireAuth from '@/components/common/require-auth';
-import MainLayout from '../layouts/MainLayout.jsx';
-import AuthLayout from '../layouts/AuthLayout.jsx';
-import OAuthSuccess from '../pages/auth/oauth-sucess.jsx';
+import MainLayout from '@/layouts/MainLayout.jsx';
+import AuthLayout from '@/layouts/AuthLayout.jsx';
+import OAuthSuccess from '@/pages/auth/oauth-sucess.jsx';
 
 const HomePage = lazy(() => import("@/pages/home/landing"));
 const BlogListPage = lazy(() => import("@/pages/blogs/BlogListPage"));
 const BlogDetailPage = lazy(() => import("@/pages/blogs/BlogDetailPage"));
 const BlogEditorPage = lazy(() => import("@/pages/blogs/BlogEditorPage"));
-// const LoginPage = lazy(() => import("@/pages/auth/login"));
-// const SignupPage = lazy(() => import("@/pages/auth/register"));
 const ProfileViewPage = lazy(() => import("@/pages/profile/ViewProfile"));
 const MyBlogsPage = lazy(() => import("@/pages/blogs/BlogListPage"));
 const ProfileEditPage = lazy(() => import("@/pages/profile/EditProfile"));
@@ -29,6 +27,7 @@ const AppRouter = () => {
         </Suspense>
     );
 
+      
     const router = createBrowserRouter([
         {
             path: "/",
@@ -39,11 +38,10 @@ const AppRouter = () => {
                 { path: "blogs", element: withSuspense(BlogListPage) },
                 { path: "blogs/:id", element: withSuspense(BlogDetailPage) },
                 { path: "profile/:username", element: withSuspense(ProfileViewPage) },
-
                 {
                     element: <RequireAuth />,
                     children: [
-                        { path: "blogs/new", element: withSuspense(BlogEditorPage) },
+                        { path: "blogs/new", element: withSuspense(BlogEditorPage)},
                         { path: "blogs/edit/:id", element: withSuspense(BlogEditorPage) },
                         { path: "profile/me", element: withSuspense(MyBlogsPage) },
                         { path: "profile/edit", element: withSuspense(ProfileEditPage) },

@@ -10,7 +10,7 @@ let failedQueue = [];
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   timeout: 10000,
-  withCredentials: true, // Important to send cookies!
+  withCredentials: true, // Important In Order to send cookies!
   headers: {
     Accept: "application/json",
   },
@@ -28,8 +28,39 @@ const processQueue = (error, token = null) => {
   failedQueue = [];
 };
 
+// axiosInstance.interceptors.request.use(
+//   function (config) {
+//     if (config.TYPE?.params) {
+//       config.params = {
+//         ...config.params,
+//         ...config.TYPE.params,
+//       };
+//     } else if (config.TYPE?.query) {
+//       config.url = config.url + "/" + config.TYPE.query;
+//     }
+
+//     // * Optionally attach access token from storage
+//     const accessToken = getAccessToken();
+//     if (accessToken) {
+//       config.headers["Authorization"] = `Bearer ${accessToken}`;
+//     }
+
+//     return config;
+//   },
+//   function (error) {
+//     return Promise.reject(error);
+//   }
+// );
+
+
 axiosInstance.interceptors.request.use(
   function (config) {
+    if (config.TYPE?.pathParams) {
+      Object.entries(config.TYPE.pathParams).forEach(([key, value]) => {
+        config.url = config.url.replace(`:${key}`, value);
+      });
+    }
+
     if (config.TYPE?.params) {
       config.params = {
         ...config.params,
@@ -39,7 +70,6 @@ axiosInstance.interceptors.request.use(
       config.url = config.url + "/" + config.TYPE.query;
     }
 
-    // * Optionally attach access token from storage
     const accessToken = getAccessToken();
     if (accessToken) {
       config.headers["Authorization"] = `Bearer ${accessToken}`;
@@ -75,7 +105,7 @@ axiosInstance.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const response = await axios.get(
+        const response = await axios.post(
           `${import.meta.env.VITE_API_URL}/auth/refresh`,
           {
             withCredentials: true,

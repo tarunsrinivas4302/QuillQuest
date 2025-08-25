@@ -26,15 +26,25 @@ export const clearAccessToken = () => {
     "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 };
 
-export const getType = (value, body) => {
-  if (value.params) {
-      return { params: body }
-  } else if (value.query) {
-      if (typeof body === 'object') {
-          return { query: body._id }
-      } else {
-          return { query: body }
-      }
+// export const getType = (value, body) => {
+//   if (value.params) {
+//       return { params: body }
+//   } else if (value.query) {
+//       if (typeof body === 'object') {
+//           return { query: body._id }
+//       } else {
+//           return { query: body }
+//       }
+//   }
+//   return {};
+// }
+
+export const getType = (endpoint, body) => {
+  const type = {};
+  if (endpoint.params && typeof body === 'object' && body !== null) {
+    type.pathParams = {};
+    type.pathParams[endpoint.params] = body[endpoint.params];
   }
-  return {};
-}
+
+  return type;
+};

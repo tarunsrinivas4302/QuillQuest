@@ -1,6 +1,22 @@
-import { Navigate, useLocation } from "react-router-dom";
+// import { Navigate, useLocation } from "react-router-dom";
+// import { useAuthContext } from "@/context/auth-context";
+// const RequireAuth = ({ children }) => {
+//   const { user, isAuthenticated } = useAuthContext();
+//   const location = useLocation();
+//   console.log("RequireAuth", user, isAuthenticated, location.pathname);
+//   // if (!user && !isAuthenticated) {
+//   //   return <Navigate to="/login" state={{ from: location }} replace />;
+//   // }
+
+//   return children;
+// };
+
+// export default RequireAuth;
+
+import { Navigate, useLocation, Outlet } from "react-router-dom";
 import { useAuthContext } from "@/context/auth-context";
-const RequireAuth = ({ children }) => {
+
+const RequireAuth = () => {
   const { user, isAuthenticated } = useAuthContext();
   const location = useLocation();
 
@@ -8,7 +24,7 @@ const RequireAuth = ({ children }) => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  return children;
+  return <Outlet />; // ← this is key
 };
 
 export default RequireAuth;

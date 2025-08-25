@@ -77,23 +77,21 @@ app.use(
 
 app.use(express.json({ limit: "10kb" })); // Limit request body size to 10KB
 app.use(express.urlencoded({ extended: true, limit: "10kb" }));
-// ✅ Move cookieParser before csrfMiddleware
 app.use(cookieParser());
 app.use(csrfMiddleware);
 
-// ✅ Ensure express-mongo-sanitize does not modify immutable objects
 app.use((req, res, next) => {
   req.body = mongoSanitize.sanitize(req.body);
   req.params = mongoSanitize.sanitize(req.params);
-  req.sanitizedQuery = mongoSanitize.sanitize(req.query); // ✅ Store sanitized query in a new property
+  req.sanitizedQuery = mongoSanitize.sanitize(req.query); 
   next();
 });
 
 app.use((req, res, next) => {
   res.cookie("session", "secureToken", {
-    httpOnly: true, // Prevent JavaScript access
-    secure: true, // Only send over HTTPS
-    sameSite: "strict", // Prevent CSRF attacks
+    httpOnly: true, 
+    secure: true, 
+    sameSite: "strict", 
   });
   next();
 });
@@ -129,9 +127,8 @@ app.use((req, res, next) => {
   }
 });
 
-// <-- include virtuals in `JSON.stringify()`
 mongoose.set("toJSON", {
-  virtuals: true, // this will convert _id to id
+  virtuals: true, 
   transform: (doc, ret) => {
     ret.password = undefined;
     ret._id = undefined;

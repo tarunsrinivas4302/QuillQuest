@@ -22,7 +22,7 @@ const HeaderCTA = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  if (!user && !isAuthenticated) {
+  if (!user || !isAuthenticated) {
     return (
       <Link
         to="/login"
@@ -32,7 +32,6 @@ const HeaderCTA = () => {
       </Link>
     );
   }
-
   const userInitial = user?.username?.[0]?.toUpperCase() || "U";
   const profileImage = user?.profileImage?.url;
 
@@ -63,20 +62,20 @@ const HeaderCTA = () => {
               </Link>
             </li>
             <li>
-              <Link to="/profile" className="block px-4 py-2 hover:bg-gray-100">
+              <Link to="/profile/me" className="block px-4 py-2 hover:bg-gray-100">
                 Profile
               </Link>
             </li>
-            <li>
+            {/* <li>
               <Link to="/dashboard" className="block px-4 py-2 hover:bg-gray-100">
                 Dashboard
               </Link>
-            </li>
-            <li>
+            </li> */}
+            {/* <li>
               <Link to="/settings" className="block px-4 py-2 hover:bg-gray-100">
                 Settings
               </Link>
-            </li>
+            </li> */}
             <li>
               <button
                 onClick={handleLogout}
